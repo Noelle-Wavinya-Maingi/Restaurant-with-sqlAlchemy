@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship, sessionmaker, declarative_base
 Base = declarative_base()
 
 # Create a SQLAlchemy engine and session
-engine = create_engine('sqlite:///restaurant.db')
+engine = create_engine('sqlite:///restaurant.db')  
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -28,14 +28,16 @@ class Review(Base):
 
     # Define a method to get the full review text
     def full_review(self):
-        return f"Review for {self.restaurant.name} by {self.customer.full_name()}: {self.star_rating} stars"
+        restaurant_name = self.restaurant.name if self.restaurant else "Unknown Restaurant"
+        customer_name = self.customer.full_name() if self.customer else "Unknown Customer"
+        return f"Review for {restaurant_name} by {customer_name}: {self.star_rating} stars"
+    
+    # Object relationship methods
+    def customer_name(self):
+        return self.customer.full_name()
 
-    # Define methods to access related objects
-    def customer(self):
-        return self.customer
-
-    def restaurant(self):
-        return self.restaurant
+    def restaurant_name(self):
+        return self.restaurant.name
 
 # Define the Customer model
 class Customer(Base):
@@ -55,16 +57,15 @@ class Customer(Base):
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
 
-    # Define methods to access related objects and collections
-    def reviews(self):
+    # Object relationship methods
+    def customer_reviews(self):
         return self.reviews
 
-    def restaurants(self):
+    def reviewed_restaurants(self):
         return session.query(Restaurant).distinct().join(Review).filter(Review.customer == self).all()
     
-    # Define a method to find the favorite restaurant
     def favorite_restaurant(self):
-        max_rating = -1
+        max_rating = 0
         favorite = None
         for review in self.reviews:
             if review.star_rating > max_rating:
@@ -72,14 +73,12 @@ class Customer(Base):
                 favorite = review.restaurant
         return favorite
 
-    # Define a method to add a review
     def add_review(self, restaurant, rating):
         review = Review(customer=self, restaurant=restaurant, star_rating=rating)
         session.add(review)
         session.commit()
         return review
 
-    # Define a method to delete all reviews for a restaurant
     def delete_reviews(self, restaurant):
         reviews_to_delete = [review for review in self.reviews if review.restaurant == restaurant]
         for review in reviews_to_delete:
@@ -99,20 +98,18 @@ class Restaurant(Base):
 
     def __repr__(self):
         return f"<Restaurant(id={self.id}, name='{self.name}', price={self.price})>"
-    
-    # Define methods to access related objects and collections
-    def reviews(self):
-        return self.reviews
-    
-    def customers(self):
-        return session.query(Customer).distinct().join(Review).filter(Review.restaurant == self).all()
 
-    # Define a class method to find the fanciest restaurant
+    # Object relationship methods
+    def restaurant_reviews(self):
+        return self.reviews
+
+    def reviewing_customers(self):
+        return session.query(Customer).distinct().join(Review).filter(Review.restaurant == self).all()
+    
     @classmethod
     def fanciest(cls):
         return session.query(cls).order_by(cls.price.desc()).first()
 
-    # Define a method to get all reviews for this restaurant
     def all_reviews(self):
         return [f"Review for {self.name} by {review.customer.full_name()}: {review.star_rating} stars" for review in self.reviews]
 
