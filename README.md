@@ -5,17 +5,19 @@
 
 ## Project Description
 ### Object Relations Code Challenge - Restaurants
+For this assignment, we'll be working with a restaurant review domain.
 
-For this assignment, we'll be working with a Yelp-style domain.
+We have three models: `Restaurant`, `Review`, and `Customer`.
 
-We have three models:
-- `Restaurant`
-- `Customer`
-- `Review`
+ 
 
-For our purposes, a `Restaurant` has many `Reviews`, a `Customer` has many `Review`s, and a `Review` belongs to a `Customer` and to a `Restaurant`.
+For our purposes, a `Restaurant` has many `Review`s, a `Customer` has many
 
-`Restaurant` - `Customer` is a many-to-many relationship.
+`Review`s, and a `Review` belongs to a `Restaurant` and to a `Customer`.
+
+`Restaurant` - `Customer` is a many to many relationship.
+
+ 
 
 ### Topics
 - Classes and Instances
@@ -25,8 +27,26 @@ For our purposes, a `Restaurant` has many `Reviews`, a `Customer` has many `Revi
 - Lists and List Methods
 
 ### Project Deliverables
+You need to have migrations and models for the initial `Restaurant` and `Customer` models, and seed data for some `Restaurant`s and `Customer`s.
+
+The schema currently looks like this: 
+
+__restaurant's table__
+| Column   | Type     |
+| -------- | :------: |
+| name     | String   |
+| price    | Integer  |
+
+__customer's table__
+| Column      | Type     |
+| --------    | :------: |
+| first_name  | String   |
+| last_name   | String   |
+
+
+
+You will need to create the migration for the `reviews` table using the attributes specified in the deliverables below.
 Write the following methods in the classes in the files provided. Feel free to build out any helper methods if needed.
-Initializers, Readers, and Writers
 
 #### Customer
 - `Customer __init__()`
@@ -124,11 +144,11 @@ Review for {insert restaurant name} by {insert customer's full name}: {insert re
 - `Restaurant all_reviews()`
   - should return a list of strings with all the reviews for this restaurant
   - formatted as follows:
-[
+  [
 
- "Review for {insert restaurant name} by {insert customer's full name}: {insert review star_rating} stars.",
+ __"Review for {insert restaurant name} by {insert customer's full name}: {insert review star_rating} stars.",__
 
- "Review for {insert restaurant name} by {insert customer's full name}: {insert review star_rating} stars.",
+ __"Review for {insert restaurant name} by {insert customer's full name}: {insert review star_rating} stars.",__
 
 ]
 
