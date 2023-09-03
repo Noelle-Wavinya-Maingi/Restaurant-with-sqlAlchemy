@@ -11,7 +11,7 @@ session = Session()
 
 def seed_database():
     # Create restaurants and customers
-    for _ in range(10):  # You can adjust the number of records as needed
+    for _ in range(10):   
         restaurant = Restaurant(
             name=fake.company(),
             price=random.randint(100, 4000)
