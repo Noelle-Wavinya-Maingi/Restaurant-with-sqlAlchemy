@@ -1,12 +1,8 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, sessionmaker, declarative_base
-# from sqlalchemy.ext.declarative import declarative_base
 
 # Create a declarative base
 Base = declarative_base()
-
-# Create a Faker instance to generate fake data
-
 
 # Create a SQLAlchemy engine and session
 engine = create_engine('sqlite:///restaurant.db')
@@ -23,6 +19,7 @@ class Review(Base):
     customer_id = Column(Integer, ForeignKey("customers.id"))
     restaurant_id = Column(Integer, ForeignKey("restaurants.id"))
 
+    # Define relationships with Customer and Restaurant
     customer = relationship("Customer", back_populates="reviews")
     restaurant = relationship("Restaurant", back_populates="reviews")
 
@@ -33,6 +30,13 @@ class Review(Base):
     def full_review(self):
         return f"Review for {self.restaurant.name} by {self.customer.full_name()}: {self.star_rating} stars"
 
+    # Define methods to access related objects
+    def customer(self):
+        return self.customer
+
+    def restaurant(self):
+        return self.restaurant
+
 # Define the Customer model
 class Customer(Base):
     __tablename__ = "customers"
@@ -41,6 +45,7 @@ class Customer(Base):
     first_name = Column(String)
     last_name = Column(String)
 
+    # Define relationship with Review
     reviews = relationship("Review", back_populates="customer")
 
     def __repr__(self):
@@ -50,6 +55,13 @@ class Customer(Base):
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
 
+    # Define methods to access related objects and collections
+    def reviews(self):
+        return self.reviews
+
+    def restaurants(self):
+        return session.query(Restaurant).distinct().join(Review).filter(Review.customer == self).all()
+    
     # Define a method to find the favorite restaurant
     def favorite_restaurant(self):
         max_rating = -1
@@ -82,10 +94,18 @@ class Restaurant(Base):
     name = Column(String)
     price = Column(Integer)
 
+    # Define relationship with Review
     reviews = relationship("Review", back_populates="restaurant")
 
     def __repr__(self):
         return f"<Restaurant(id={self.id}, name='{self.name}', price={self.price})>"
+    
+    # Define methods to access related objects and collections
+    def reviews(self):
+        return self.reviews
+    
+    def customers(self):
+        return session.query(Customer).distinct().join(Review).filter(Review.restaurant == self).all()
 
     # Define a class method to find the fanciest restaurant
     @classmethod
