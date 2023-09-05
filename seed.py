@@ -36,6 +36,7 @@ def seed_database():
         )
         session.add(review)
         session.commit()  # Commit after adding each review
+        session.close()
 
 if __name__ == "__main__":
     seed_database()
