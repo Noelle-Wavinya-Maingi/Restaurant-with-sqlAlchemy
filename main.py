@@ -51,8 +51,8 @@ else:
 print_separator()
 
 # Query a specific customer's reviews
-customer_first_name = "John"  
-customer_last_name = "Doe"     
+customer_first_name = "Alan"  
+customer_last_name = "Jones"     
 customer = session.query(Customer).filter_by(first_name=customer_first_name, last_name=customer_last_name).first()
 
 if customer:
